@@ -134,6 +134,8 @@ static void heapify_down(heap_t *heap)
 void free_heap(heap_t* heap)
 {
     free(heap->arr);
+    heap->capacity=0;
+    heap->size=0;
 }
 
 
@@ -147,6 +149,8 @@ bool add_node(heap_t* heap,heap_node_t* node)
  heap->arr[heap_size]=node;
  heap->size++;
  heapify_up(heap);
+
+ return true;
 
 }
 
