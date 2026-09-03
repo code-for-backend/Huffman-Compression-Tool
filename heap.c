@@ -1,6 +1,6 @@
 
 
-#include "heap.h"
+#include "huffman.h"
 #include <stdlib.h>
 
 /*For huffman compression we will be using capacity=256 since we need

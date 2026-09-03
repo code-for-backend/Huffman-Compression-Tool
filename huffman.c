@@ -1,8 +1,6 @@
 
-#include "heap.h"
+#include "huffman.h"
 #include <stdlib.h>
-
-
 
 
 static void free_tree(heap_node_t *node)
@@ -150,3 +148,67 @@ heap_node_t* build_huffman_tree(uint32_t freq[256])
 
 
 
+
+
+static bool generate_codes_recursive(heap_node_t *node,
+                                     uint32_t code,
+                                     uint8_t len,
+                                   huffman_code_t codes[256])
+{
+    if (node == NULL)
+        return true;
+
+    /* Leaf node */
+    if (node->left == NULL && node->right == NULL)
+    {
+        /*
+         * Special case: only one unique symbol in the input.
+         * Give it a 1-bit code.
+         */
+        if (len == 0)
+        {
+            codes[node->byte].code = 0;
+            codes[node->byte].len = 1;
+        }
+        else
+        {
+            codes[node->byte].code = code;
+            codes[node->byte].len = len;
+        }
+
+        return true;
+    }
+
+    /*
+     * We support Huffman codes up to 32 bits.
+     * A child would have code length len + 1.
+     */
+    if (len == 32)
+        return false;
+
+    /* Left = 0 */
+    if (!generate_codes_recursive(node->left,
+                                  code << 1,
+                                  len + 1,
+                                  codes))
+    {
+        return false;
+    }
+
+    /* Right = 1 */
+    if (!generate_codes_recursive(node->right,
+                                  (code << 1) | 1,
+                                  len + 1,
+                                  codes))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool generate_codes(heap_node_t *root,
+                    huffman_code_t codes[256])
+{
+    return generate_codes_recursive(root, 0, 0, codes);
+}
