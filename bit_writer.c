@@ -1,10 +1,11 @@
 #include "bit_writer.h"
 #include <stdio.h>
 
-void bit_writer_init(bit_writer_t *writer)
+void bit_writer_init(bit_writer_t *writer,FILE* fp)
 {
     writer->buffer = 0;
     writer->bit_count = 0;
+    writer->fp=fp;
 }
 
 bool bit_writer_write_bit(bit_writer_t *writer, uint8_t bit)
@@ -19,7 +20,7 @@ bool bit_writer_write_bit(bit_writer_t *writer, uint8_t bit)
 
     if (writer->bit_count == 8)
     {
-        putchar(writer->buffer);
+        fputc(writer->buffer,writer->fp);/*flush the data to file*/
 
         writer->buffer = 0;
         writer->bit_count = 0;
@@ -46,12 +47,13 @@ bool bit_writer_write_code(bit_writer_t *writer,
     return true;
 }
 
+
 bool bit_writer_flush(bit_writer_t *writer)
 {
     if (writer->bit_count == 0)
         return true;
 
-    putchar(writer->buffer);
+    fputc(writer->buffer,writer->fp);
 
     writer->buffer = 0;
     writer->bit_count = 0;

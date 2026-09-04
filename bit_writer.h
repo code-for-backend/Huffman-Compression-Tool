@@ -3,14 +3,16 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 typedef struct
 {
     uint8_t buffer;
     uint8_t bit_count;
+    FILE* fp;
 } bit_writer_t;
 
-void bit_writer_init(bit_writer_t *writer);
+void bit_writer_init(bit_writer_t *writer,FILE* fp);
 
 bool bit_writer_write_bit(bit_writer_t *writer, uint8_t bit);
 

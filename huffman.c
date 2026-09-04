@@ -1,9 +1,11 @@
 
 #include "huffman.h"
+#include "bit_writer.h"
 #include <stdlib.h>
+#include <stddef.h>
 
 
-static void free_tree(heap_node_t *node)
+ void free_tree(heap_node_t *node)
 {
     if (node == NULL) return;
     free_tree(node->left);
@@ -211,4 +213,34 @@ bool generate_codes(heap_node_t *root,
                     huffman_code_t codes[256])
 {
     return generate_codes_recursive(root, 0, 0, codes);
+}
+
+
+
+
+
+bool huffman_encode(const uint8_t *data,
+                    size_t size,
+                    huffman_code_t codes[256],
+                    bit_writer_t *writer)
+{
+    if (data == NULL || codes == NULL || writer == NULL)
+        return false;
+
+    for (size_t i = 0; i < size; i++)
+    {
+        huffman_code_t *code = &codes[data[i]];
+
+        if (code->len == 0)
+            return false;
+
+        if (!bit_writer_write_code(writer,
+                                   code->code,
+                                   code->len))
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
